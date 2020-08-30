@@ -4,8 +4,8 @@ class product {
     this.id = id;
     this.photo = photo;
     this.price = price;
- 
-    
+
+
   }
   render() {
     const container = builder.create("article").className("products");
@@ -14,20 +14,20 @@ class product {
       .className("image-container")
       .appendTo(container);
 
-    const image = builder
+    builder
       .create("img")
       .className("product-img")
       .src(this.photo)
       .appendTo(imageContainer);
 
-    const cartButton = builder
+    builder
       .create("button")
       .className("bag-btn")
       .html(
         '<i class="fas fa-shopping-cart"> </i>Add to cart<i class="fas fa-shopping-cart"> </i>'
       )
       .onclick(() => {
-        let index = cartManager.cartItemList.findIndex(x => x.id === this.id);
+        const index = cartManager.cartItemList.findIndex(x => x.id === this.id);
         if (index === -1) {
           var cartItem = new CartItem(
             this.id,
@@ -90,7 +90,7 @@ class CartItem {
     this.amount = 0;
     this.photo = photo;
     this.totalItemPrice = 0;
-   
+
   }
   increase = () => {
     this.amount++;
@@ -105,7 +105,7 @@ class CartItem {
 
 class CartManager {
   constructor() {
-   
+
     this.cartItemList = [];
     this.totalItem = 0;
     this.totalPrice = 0;
@@ -124,7 +124,7 @@ class CartManager {
 
   getTotalPrice() {
     return this.cartItemList.reduce((acc, item) => {
-      return item.price * item.amount + acc;
+      return (item.price * item.amount) + acc;
     }
       , 0
     );
@@ -141,55 +141,52 @@ class CartManager {
       })
       .appendTo(this.cart);
     builder.create("h2").text("Your cart").appendTo(this.cart);
-    this.cartItemList.forEach((temp) => {
-      const item = productsRepository.find(x => {
-        if (x.id === temp.id)
-          return x;
-      });
-
+    this.cartItemList.forEach((item) => {
       const containerCart = builder
         .create("section")
         .className("cart-item")
         .appendTo(this.cart);
 
-      const image = builder
+      builder
         .create("img")
         .src(item.photo)
         .appendTo(containerCart);
 
-      const nameDive = builder.create("div").appendTo(containerCart);
+      const nameDiv = builder.create("div").appendTo(containerCart);
 
-      const name = builder.create("h4").html(item.name).appendTo(nameDive);
+      builder.create("h4").html(item.name).appendTo(nameDiv);
 
-      const price = builder
+      builder
         .create("h5")
         .html(item.price)
-        .appendTo(nameDive);
+        .appendTo(nameDiv);
 
-      const removeDive = builder
+      builder
         .create("div")
         .className("remove-item")
         .text("remove")
         .onclick(() => {
           let i = cartManager.cartItemList.findIndex(x => x.id === item.id);
-          cartManager.totalItem -= this.cartItemList[i].amount;
-          this.cartItemList.splice(i, 1);
-          document.querySelector(".cart-item").textContent =
-            cartManager.totalItem;
-          cartManager.render();
+          if (i !== -1) {
+            cartManager.totalItem -= this.cartItemList[i].amount;
+            this.cartItemList.splice(i, 1);
+            document.querySelector(".cart-item").textContent =
+              cartManager.totalItem;
+            cartManager.render();
+          }
         })
-        .appendTo(nameDive);
+        .appendTo(nameDiv);
       const amountDiv = builder
-        .create("dive")
+        .create("div")
         .className("item-amount")
         .appendTo(containerCart);
 
-      const btnup = builder
+      builder
         .create("i")
         .className("fas fa-chevron-up")
-        .on("click",() => {
+        .on("click", () => {
           item.amount++;
-        
+
           item.totalItemPrice = item.amount * item.price;
           cartManager.totalItem++;
           document.getElementsByClassName("cart-items")[0].textContent =
@@ -206,9 +203,9 @@ class CartManager {
       const btndown = builder
         .create("i")
         .className("fas fa-chevron-down")
-        .on("click",() => {
+        .on("click", () => {
           item.amount--;
-        
+
           item.totalItemPrice = item.amount * item.price;
           cartManager.totalItem--;
           document.getElementsByClassName("cart-items")[0].textContent =
